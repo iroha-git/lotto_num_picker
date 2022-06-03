@@ -1,0 +1,98 @@
+Index: lotto_num_picker.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pandas as pd\r\nimport requests\r\nimport re\r\nfrom bs4 import BeautifulSoup\r\n\r\nimported_df = pd.read_excel(\"./lotto_number.xlsx\")\r\ndf = imported_df.iloc[:, [1, 2, 3, 4, 5, 6, 7]]\r\ndf = df.values.tolist()  # 모든 7개의 로또 번호 리스트\r\n\r\n'''\r\n    역대 가장 많이 나온 번호 6개를 출력합니다.\r\n'''\r\ndef max_picked_num():\r\n    count_lotto = dict()\r\n\r\n    for i in range(1, 46):\r\n        count_lotto[i] = 0\r\n\r\n    for numbers in df:\r\n        for number in numbers:\r\n            count_lotto[number] += 1\r\n\r\n    count_lotto = sorted(count_lotto.items(), key=lambda x: x[1], reverse=True)\r\n\r\n    result = list()\r\n    for i in range(6):\r\n        result.append(count_lotto[i][0])\r\n\r\n    print(result)\r\n\r\n'''\r\n    최신 로또 번호를 갱신하여 excel 파일에 저장합니다.\r\n'''\r\ndef append_new_pick():\r\n    lotto_num_url = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=%EB%A1%9C%EB%98%90+%EB%B2%88%ED%98%B8'\r\n    req = requests.get(lotto_num_url)\r\n    raw = req.text\r\n\r\n    html = BeautifulSoup(raw, 'html.parser')\r\n\r\n    inning_date = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div.tab_area > div.type_flick_select._custom_select > div.select_tab > a.text._select_trigger._text').get_text()\r\n    inning = int(inning_date[:4])\r\n\r\n    if len(df) == inning:\r\n        print(\"already recorded inning! No.%d\" % inning)\r\n    else:\r\n        new_row = [inning]\r\n        numbers_with_tag = html.select('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.winning_number > span')\r\n        for text in numbers_with_tag:\r\n            new_row.append(text.get_text())  # 일반 번호 추가\r\n\r\n        bonus_num = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.winning_number > span').get_text()\r\n        new_row.append(bonus_num)  # 보너스 번호\r\n\r\n        prize_amount = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > p > strong').get_text()\r\n        prize_amount = int(prize_amount.replace(\",\", \"\"))\r\n        winners_count = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > p').get_text()\r\n        winners_count = winners_count[winners_count.index('('):]\r\n        winners_count = int(re.findall(r'\\d', winners_count)[0])\r\n        new_row.append(winners_count)  # 1등 당첨 수\r\n        new_row.append(prize_amount)   # 1등 당첨 금액\r\n        new_row.append('')             # 로또 총 구매 금액\r\n\r\n        date = inning_date[inning_date.index('('):]\r\n        date = date.strip('()')\r\n        date = date.replace('.', '-')\r\n        new_row.append(date)  # 발표일\r\n\r\n        new_df = imported_df.append(pd.Series(new_row, index=imported_df.columns), ignore_index=True)\r\n\r\n        writer = pd.ExcelWriter('lotto_number.xlsx', engine='openpyxl')\r\n        new_df.to_excel(writer, index=False)\r\n        writer.save()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lotto_num_picker.py b/lotto_num_picker.py
+--- a/lotto_num_picker.py	(revision 5d43ff14c3a15ed150c275fc496b0ff23e3d99ea)
++++ b/lotto_num_picker.py	(date 1654273870350)
+@@ -1,33 +1,42 @@
+ import pandas as pd
+ import requests
+ import re
++import tensorflow as tf
+ from bs4 import BeautifulSoup
+ 
+ imported_df = pd.read_excel("./lotto_number.xlsx")
+ df = imported_df.iloc[:, [1, 2, 3, 4, 5, 6, 7]]
+ df = df.values.tolist()  # 모든 7개의 로또 번호 리스트
+-
+ '''
+     역대 가장 많이 나온 번호 6개를 출력합니다.
+ '''
+ def max_picked_num():
+     count_lotto = dict()
+-
+     for i in range(1, 46):
+         count_lotto[i] = 0
+-
+     for numbers in df:
+         for number in numbers:
+             count_lotto[number] += 1
+-
+     count_lotto = sorted(count_lotto.items(), key=lambda x: x[1], reverse=True)
+-
+     result = list()
+     for i in range(6):
+         result.append(count_lotto[i][0])
+ 
+     print(result)
+ 
++'''
++    딥러닝 기반으로 학습된 새로운 모델을 생성합니다.
++'''
++def train_new_model():
++    pass
++
++
++'''
++    딥러닝 모델을 통해 로또 번호를 예측합니다.
++'''
++def predict_with_model():
++    pass
++
+ '''
+     최신 로또 번호를 갱신하여 excel 파일에 저장합니다.
+ '''
+@@ -35,12 +44,9 @@
+     lotto_num_url = 'https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=%EB%A1%9C%EB%98%90+%EB%B2%88%ED%98%B8'
+     req = requests.get(lotto_num_url)
+     raw = req.text
+-
+     html = BeautifulSoup(raw, 'html.parser')
+-
+     inning_date = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div.tab_area > div.type_flick_select._custom_select > div.select_tab > a.text._select_trigger._text').get_text()
+     inning = int(inning_date[:4])
+-
+     if len(df) == inning:
+         print("already recorded inning! No.%d" % inning)
+     else:
+@@ -48,10 +54,8 @@
+         numbers_with_tag = html.select('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.winning_number > span')
+         for text in numbers_with_tag:
+             new_row.append(text.get_text())  # 일반 번호 추가
+-
+         bonus_num = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.winning_number > span').get_text()
+         new_row.append(bonus_num)  # 보너스 번호
+-
+         prize_amount = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > p > strong').get_text()
+         prize_amount = int(prize_amount.replace(",", ""))
+         winners_count = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > p').get_text()
+@@ -60,14 +64,11 @@
+         new_row.append(winners_count)  # 1등 당첨 수
+         new_row.append(prize_amount)   # 1등 당첨 금액
+         new_row.append('')             # 로또 총 구매 금액
+-
+         date = inning_date[inning_date.index('('):]
+         date = date.strip('()')
+         date = date.replace('.', '-')
+         new_row.append(date)  # 발표일
+-
+         new_df = imported_df.append(pd.Series(new_row, index=imported_df.columns), ignore_index=True)
+-
+         writer = pd.ExcelWriter('lotto_number.xlsx', engine='openpyxl')
+         new_df.to_excel(writer, index=False)
+         writer.save()
+\ No newline at end of file
