@@ -1,7 +1,8 @@
 import pandas as pd
 import requests
 import re
-import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
 from bs4 import BeautifulSoup
 
 imported_df = pd.read_excel("./lotto_number.xlsx")
@@ -9,9 +10,9 @@ df = imported_df.iloc[:, [1, 2, 3, 4, 5, 6, 7]]
 df = df.values.tolist()  # 모든 7개의 로또 번호 리스트
 
 '''
-    역대 가장 많이 나온 번호 6개를 출력합니다.
+    역대 가장 많이, 혹은 적게 나온 번호 6개를 출력합니다.
 '''
-def max_picked_num():
+def most_picked_num(reverse=False):
     count_lotto = dict()
 
     for i in range(1, 46):
@@ -21,7 +22,10 @@ def max_picked_num():
         for number in numbers:
             count_lotto[number] += 1
 
-    count_lotto = sorted(count_lotto.items(), key=lambda x: x[1], reverse=True)
+    if not reverse:
+        count_lotto = sorted(count_lotto.items(), key=lambda x: x[1], reverse=True)
+    else:
+        count_lotto = sorted(count_lotto.items(), key=lambda x: x[1])
 
     result = list()
     for i in range(6):
@@ -30,11 +34,50 @@ def max_picked_num():
     print(result)
 
 '''
+    역대 로또 번호 통계를 출력합니다.
+'''
+def print_stastics():
+    count_lotto = dict()
+
+    for i in range(1, 46):
+        count_lotto[i] = 0
+
+    for numbers in df:
+        for number in numbers:
+            count_lotto[number] += 1
+
+    keys = np.array(list(count_lotto.keys())); values = np.array(list(count_lotto.values()))
+    is_max = values == max(values)
+    is_min = values == min(values)
+    plt.figure(figsize=(14, 10))
+    plt.xlabel('numbers')
+    plt.ylabel('picked_count')
+    plt.bar(keys, values)
+    plt.bar(keys[is_max], values[is_max], color='red')
+    plt.bar(keys[is_min], values[is_min], color='yellow')
+    plt.xticks(keys)
+    plt.yticks(values)
+    plt.xlim(min(keys) - 1, max(keys) + 1)
+    plt.ylim(min(values) - 1, max(values) + 1)
+
+    for i, v in enumerate(keys):
+        plt.text(v, values[i], values[i],
+                 fontsize=12, color='black',
+                 horizontalalignment='center',
+                 verticalalignment='top')
+        plt.text(v, values[i], keys[i],
+                 fontsize=12, color='red',
+                 horizontalalignment='center',
+                 verticalalignment='bottom')
+    plt.show()
+
+'''
     딥러닝 기반으로 학습된 새로운 모델을 생성합니다.
 '''
 def train_new_model():
-    pass
+    import tensorflow as tf
 
+    pass
 
 '''
     딥러닝 모델을 통해 로또 번호를 예측합니다.
@@ -63,7 +106,7 @@ def append_new_pick():
         for text in numbers_with_tag:
             new_row.append(text.get_text())  # 일반 번호 추가
 
-        bonus_num = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.winning_number > span').get_text()
+        bonus_num = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > div > div.bonus_number > span').get_text()
         new_row.append(bonus_num)  # 보너스 번호
 
         prize_amount = html.select_one('#main_pack > div.sc_new.cs_lotto._lotto > div > div.content_area > div > div > div:nth-child(2) > div.win_number_box > p > strong').get_text()
@@ -85,3 +128,6 @@ def append_new_pick():
         writer = pd.ExcelWriter('lotto_number.xlsx', engine='openpyxl')
         new_df.to_excel(writer, index=False)
         writer.save()
+
+if __name__ == "__main__":
+    print_stastics()
