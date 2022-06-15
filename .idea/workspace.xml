@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="25eaa069-1422-478d-9451-451251f8e159" name="Changes" comment="v0.0.1">
+    <list default="true" id="25eaa069-1422-478d-9451-451251f8e159" name="Changes" comment="v0.0.2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lotto_num_picker.py" beforeDir="false" afterPath="$PROJECT_DIR$/lotto_num_picker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lotto_number.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/lotto_number.xlsx" afterDir="false" />
@@ -185,6 +185,9 @@
       <workItem from="1654291580689" duration="329000" />
       <workItem from="1654507986679" duration="7113000" />
       <workItem from="1654517368993" duration="4184000" />
+      <workItem from="1654652868921" duration="632000" />
+      <workItem from="1654667278067" duration="477000" />
+      <workItem from="1655268020798" duration="3233000" />
     </task>
     <task id="LOCAL-00001" summary="v0.0.1">
       <created>1654273137399</created>
@@ -193,7 +196,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654273137399</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="v0.0.2">
+      <created>1654652885007</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1654652885007</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,12 +222,13 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="v0.0.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="v0.0.1" />
+    <MESSAGE value="v0.0.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.0.2" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/lotto_num_picker_py$oop_003.coverage" NAME="oop_003 Coverage Results" MODIFIED="1654514010288" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../彩葉/대학/3학년 1학기/피지컬컴퓨팅/수업" />
     <SUITE FILE_PATH="coverage/lotto_num_picker_py$lotto.coverage" NAME="lotto Coverage Results" MODIFIED="1654291548421" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/lotto_num_picker_py$lotto_num_picker.coverage" NAME="lotto_num_picker Coverage Results" MODIFIED="1654523273866" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/lotto_num_picker_py$lotto_num_picker.coverage" NAME="lotto_num_picker Coverage Results" MODIFIED="1655271207344" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/lotto$lotto.coverage" NAME="lotto Coverage Results" MODIFIED="1654272255155" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/lotto_num_picker_py$oop_002.coverage" NAME="oop_002 Coverage Results" MODIFIED="1654512251877" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../彩葉/대학/3학년 1학기/피지컬컴퓨팅/수업" />
     <SUITE FILE_PATH="coverage/lotto_num_picker_py$oop_001.coverage" NAME="oop_001 Coverage Results" MODIFIED="1654509656137" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../彩葉/대학/3학년 1학기/피지컬컴퓨팅/수업" />

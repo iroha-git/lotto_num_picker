@@ -3,6 +3,8 @@ import requests
 import re
 import matplotlib.pyplot as plt
 import numpy as np
+import xgboost
+from sklearn.model_selection import GridSearchCV
 from bs4 import BeautifulSoup
 
 imported_df = pd.read_excel("./lotto_number.xlsx")
@@ -72,18 +74,52 @@ def print_stastics():
     plt.show()
 
 '''
-    딥러닝 기반으로 학습된 새로운 모델을 생성합니다.
-'''
-def train_new_model():
-    import tensorflow as tf
-
-    pass
-
-'''
     딥러닝 모델을 통해 로또 번호를 예측합니다.
 '''
-def predict_with_model():
-    pass
+def predict_with_xgboost():
+    data_sum = list()
+    for combinations in df:
+        data_sum.append(sum(combinations))
+
+    temp_df = pd.DataFrame(data_sum)
+    raw = list()
+
+    raw.append(temp_df.shift(1))
+    raw.append(temp_df)
+
+    slp = pd.concat(raw, axis=1)  # Supervised Learning Problem
+    slp.dropna(inplace=True)
+
+    train = slp.values
+    print(train)
+
+    # split into input and output columns
+    train_X, train_Y = train[:, :-1], train[:, -1]
+    print(train_X)
+    print(train_Y)
+
+    # fit model
+    model = xgboost.XGBRegressor(objective='reg:squarederror', nthread=4)
+    model.fit(train_X, train_Y)
+
+    grid = {'max_depth': [5, 6, 8], 'learning_rate': [0.05, 0.1, 0.15], 'n_estimators': range(50, 100, 10)}
+    gs = GridSearchCV(model, grid, cv=5, return_train_score=True)
+    gs.fit(train_X, train_Y)
+    param = gs.best_params_
+
+    model_best = xgboost.XGBRegressor(max_depth=param['max_depth'],
+                                      learning_rate=param['learning_rate'],
+                                      n_estimators=param['n_estimators'],
+                                      objective='reg:squarederror')
+    model_best.fit(train_X, train_Y)
+
+    # construct an input for a new prediction
+    data_in = data_sum[-1:]
+
+    # make a one-step prediction
+    result = model_best.predict([data_in])
+    print(f'Input: {data_in}, Predicted: {result[0]}')
+
 
 '''
     최신 로또 번호를 갱신하여 excel 파일에 저장합니다.
@@ -130,4 +166,4 @@ def append_new_pick():
         writer.save()
 
 if __name__ == "__main__":
-    print_stastics()
+    predict_with_xgboost()
