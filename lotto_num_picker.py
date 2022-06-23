@@ -4,7 +4,6 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 import xgboost
-from sklearn.model_selection import GridSearchCV
 from bs4 import BeautifulSoup
 
 imported_df = pd.read_excel("./lotto_number.xlsx")
@@ -12,9 +11,9 @@ df = imported_df.iloc[:, [1, 2, 3, 4, 5, 6, 7]]
 df = df.values.tolist()  # 모든 7개의 로또 번호 리스트
 
 '''
-    역대 가장 많이, 혹은 적게 나온 번호 6개를 출력합니다.
+    역대 가장 많이/적게 나온 번호 6개를 출력합니다.
 '''
-def most_picked_num(reverse=False):
+def most_picked_num(reverse=False, pick=6):  # reverse가 True인 경우, 적게 나온 순으로 출력.
     count_lotto = dict()
 
     for i in range(1, 46):
@@ -30,10 +29,10 @@ def most_picked_num(reverse=False):
         count_lotto = sorted(count_lotto.items(), key=lambda x: x[1])
 
     result = list()
-    for i in range(6):
+    for i in range(pick):
         result.append(count_lotto[i][0])
 
-    print(result)
+    return result
 
 '''
     역대 로또 번호 통계를 출력합니다.
@@ -74,52 +73,46 @@ def print_stastics():
     plt.show()
 
 '''
-    딥러닝 모델을 통해 로또 번호를 예측합니다.
+    xgboost 알고리즘을 통해 로또 번호를 예측합니다.
+    계산 방식: 각 회차의 합을 구하여, 이를 기반으로 다음 회차의 번호 합을 예측.
+    이 합을 기반으로 가장 많이/적게 나온 숫자들을 바탕으로 combination을 생성.
 '''
-def predict_with_xgboost():
-    data_sum = list()
-    for combinations in df:
-        data_sum.append(sum(combinations))
+def predict_with_xgboost(reverse=False):  # reverse가 True인 경우, 적게 나온 combination을 출력.
+    count_in = 500  # 입력으로 할 회차의 수
+    values = [sum(i) for i in df]
+    df_values = pd.DataFrame(values)
+    slp = list()  # Supervised Learning Problem 데이터를 저장하기 위함.
 
-    temp_df = pd.DataFrame(data_sum)
-    raw = list()
+    for i in range(count_in, 0, -1):
+        slp.append(df_values.shift(i))
+    slp.append(df_values)
 
-    raw.append(temp_df.shift(1))
-    raw.append(temp_df)
-
-    slp = pd.concat(raw, axis=1)  # Supervised Learning Problem
+    slp = pd.concat(slp, axis=1)
     slp.dropna(inplace=True)
-
     train = slp.values
-    print(train)
-
-    # split into input and output columns
-    train_X, train_Y = train[:, :-1], train[:, -1]
-    print(train_X)
-    print(train_Y)
+    train_X, train_Y = train[:, :-1], train[:, -1]  # split into input and output columns.
 
     # fit model
-    model = xgboost.XGBRegressor(objective='reg:squarederror', nthread=4)
+    model = xgboost.XGBRegressor()
     model.fit(train_X, train_Y)
 
-    grid = {'max_depth': [5, 6, 8], 'learning_rate': [0.05, 0.1, 0.15], 'n_estimators': range(50, 100, 10)}
-    gs = GridSearchCV(model, grid, cv=5, return_train_score=True)
-    gs.fit(train_X, train_Y)
-    param = gs.best_params_
-
-    model_best = xgboost.XGBRegressor(max_depth=param['max_depth'],
-                                      learning_rate=param['learning_rate'],
-                                      n_estimators=param['n_estimators'],
-                                      objective='reg:squarederror')
-    model_best.fit(train_X, train_Y)
-
     # construct an input for a new prediction
-    data_in = data_sum[-1:]
+    data_input = values[-count_in:]
 
     # make a one-step prediction
-    result = model_best.predict([data_in])
-    print(f'Input: {data_in}, Predicted: {result[0]}')
+    predicted_sum = model.predict([data_input])[0]
+    print(f'Predict: {predicted_sum}')
 
+    result = list()
+    sort_by_freq = most_picked_num(reverse=reverse, pick=45)
+    for i in sort_by_freq:
+        if predicted_sum - i >= 0:
+            predicted_sum -= i
+            result.append(i)
+        else:
+            continue
+
+    print(sort_by_freq)
 
 '''
     최신 로또 번호를 갱신하여 excel 파일에 저장합니다.
@@ -167,3 +160,4 @@ def append_new_pick():
 
 if __name__ == "__main__":
     predict_with_xgboost()
+    exit()
